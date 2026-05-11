@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Error — MyApp</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/auth.css" />
+</head>
+<body>
+
+<div class="logout-page">
+
+  <div class="logout-card">
+    <div class="logout-icon logout-icon--error" aria-hidden="true">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+    </div>
+
+    <h1>Something went wrong</h1>
+    <p class="logout-sub"><%= message %></p>
+
+    <hr class="logout-divider" />
+
+    <div class="logout-actions">
+      <a href="/login" class="btn btn--primary">Try signing in again</a>
+      <a href="/" class="btn btn--outline">Go to home</a>
+    </div>
+  </div>
+
+  <footer class="logout-footer">
+    <div class="brand-logo" aria-hidden="true">
+      <svg width="13" height="13" viewBox="0 0 22 22" fill="none">
+        <path d="M11 2L19 6.5V15.5L11 20L3 15.5V6.5L11 2Z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/>
+        <circle cx="11" cy="11" r="3" fill="white"/>
+      </svg>
+    </div>
+    <span>MyApp &middot; Secured by Auth0</span>
+  </footer>
+
+</div>
+
+</body>
+</html>

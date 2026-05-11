@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile — MyApp</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/auth.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar__brand">
+    <div class="brand-logo">
+      <svg width="17" height="17" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+        <path d="M11 2L19 6.5V15.5L11 20L3 15.5V6.5L11 2Z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
+        <circle cx="11" cy="11" r="3" fill="white"/>
+      </svg>
+    </div>
+    <span class="brand-name">MyApp</span>
+  </div>
+  <nav class="topbar__nav">
+    <a href="/" class="nav-link">Home</a>
+    <a href="/logout" class="btn btn--outline">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Sign out
+    </a>
+  </nav>
+</header>
+
+<main class="profile-page">
+
+  <section class="profile-hero">
+    <% if (user.picture) { %>
+      <img class="avatar avatar--img" src="<%= user.picture %>" alt="<%= user.name || 'Profile' %>" width="72" height="72" />
+    <% } else { %>
+      <div class="avatar avatar--initials" aria-hidden="true">
+        <%= ((user.name || user.nickname || user.email || '?').trim().split(/\s+/).length >= 2
+          ? (user.name || user.nickname).trim().split(/\s+/)[0][0] + (user.name || user.nickname).trim().split(/\s+/).slice(-1)[0][0]
+          : (user.name || user.nickname || user.email || '?')[0]
+        ).toUpperCase() %>
+      </div>
+    <% } %>
+    <div class="profile-hero__info">
+      <h1><%= user.name || user.nickname || 'User' %></h1>
+      <p class="profile-email"><%= user.email || '' %></p>
+      <% if (user.email_verified === false) { %>
+        <span class="badge badge--warning">Unverified</span>
+      <% } else { %>
+        <span class="badge badge--success">Verified</span>
+      <% } %>
+    </div>
+  </section>
+
+  <div class="cards-grid">
+
+    <div class="card">
+      <h2 class="card-title">Account details</h2>
+      <ul class="detail-list">
+        <li class="detail-item">
+          <span class="detail-label">Name</span>
+          <span class="detail-value"><%= user.name || '—' %></span>
+        </li>
+        <li class="detail-item">
+          <span class="detail-label">Nickname</span>
+          <span class="detail-value"><%= user.nickname || '—' %></span>
+        </li>
+        <li class="detail-item">
+          <span class="detail-label">Email</span>
+          <span class="detail-value"><%= user.email || '—' %></span>
+        </li>
+        <li class="detail-item">
+          <span class="detail-label">User ID</span>
+          <span class="detail-value detail-value--mono"><%= user.sub || '—' %></span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">Session info</h2>
+      <ul class="detail-list">
+        <li class="detail-item">
+          <span class="detail-label">Signed in at</span>
+          <span class="detail-value">
+            <% if (user.iat) { %>
+              <%= new Date(user.iat * 1000).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) %>
+            <% } else { %>—<% } %>
+          </span>
+        </li>
+        <li class="detail-item">
+          <span class="detail-label">Last updated</span>
+          <span class="detail-value">
+            <% if (user.updated_at) { %>
+              <%= new Date(user.updated_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) %>
+            <% } else { %>—<% } %>
+          </span>
+        </li>
+        <li class="detail-item">
+          <span class="detail-label">Provider</span>
+          <span class="detail-value">
+            <%
+              const providerMap = {
+                'auth0':         'Email / Password',
+                'google-oauth2': 'Google',
+                'github':        'GitHub',
+                'facebook':      'Facebook',
+              };
+              const providerKey = (user.sub || '').split('|')[0];
+            %>
+            <%= providerMap[providerKey] || providerKey || '—' %>
+          </span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="card card--full">
+      <div class="card-title-row">
+        <h2 class="card-title">Raw user object</h2>
+        <button class="btn btn--copy" id="copyBtn" aria-label="Copy JSON to clipboard">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Copy
+        </button>
+      </div>
+      <pre class="code-block" id="rawJson"><%= JSON.stringify(user, null, 2) %></pre>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  document.getElementById('copyBtn').addEventListener('click', async function () {
+    try {
+      await navigator.clipboard.writeText(document.getElementById('rawJson').textContent);
+      this.classList.add('copied');
+      this.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
+      setTimeout(() => {
+        this.classList.remove('copied');
+        this.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy`;
+      }, 2000);
+    } catch { this.textContent = 'Failed'; }
+  });
+</script>
+
+</body>
+</html>
